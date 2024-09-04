@@ -10,8 +10,7 @@ import UIKit
 class ViewController: UIViewController {
   
     var password: String = ""
-    
-    
+
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var firstButton: UIButton!
@@ -27,7 +26,7 @@ class ViewController: UIViewController {
         print(password)
     }
     
-    let queue = DispatchQueue(label: "myQueue", qos: .default)
+    let queue = DispatchQueue(label: "myQueue", qos: .userInteractive)
     
     @IBAction func serachPass(_ sender: Any) {
         DispatchQueue.main.async {
@@ -36,10 +35,12 @@ class ViewController: UIViewController {
         
         queue.async { [self] in
             self.bruteForce(passwordToUnlock: self.password)
-            self.firstLabel.text = self.password
-            self.textField.isSecureTextEntry = false
-            self.activityIndicator.isHidden = true
-            
+           
+            DispatchQueue.main.async {
+               self.firstLabel.text = self.password
+               self.textField.isSecureTextEntry = false
+               self.activityIndicator.isHidden = true
+            }
         }
     }
     
@@ -56,7 +57,9 @@ class ViewController: UIViewController {
 
         while password != passwordToUnlock {
             password = generateBruteForce(password, fromArray: ALLOWED_CHARACTERS)
-            print(password)
+            DispatchQueue.main.sync {
+                firstLabel.text = password
+            }
         }
         print(password)
     }
